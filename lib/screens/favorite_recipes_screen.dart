@@ -22,14 +22,12 @@ class _FavoriteRecipesScreenState extends State<FavoriteRecipesScreen> {
   @override
   void initState() {
     super.initState();
-    // Inicialize os filtros e receitas com os valores fornecidos
     _favoriteRecipes = widget.favoriteRecipes;
     _allRecipes = widget.allRecipes;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Filtra as receitas favoritas com base na URL
     final favoriteRecipesList = _allRecipes
         .where((recipe) => _favoriteRecipes.contains(recipe['recipe']['url']))
         .toList();
@@ -40,29 +38,44 @@ class _FavoriteRecipesScreenState extends State<FavoriteRecipesScreen> {
           'https://i.postimg.cc/rF3xyPGc/Black-And-White-Aesthetic-Minimalist-Modern-Simple-Typography-Coconut-Cosmetics-Logo-removebg-previe.png',
           height: 32,
           fit: BoxFit.cover,
-        ),
+        ), // Pode substituir o título se necessário
         backgroundColor: Color(0xFFFB8500),
       ),
-      body: favoriteRecipesList.isEmpty
-          ? Center(
-              child: Text(
-                'Você ainda não tem favoritos :(',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+      body: Column(
+        children: [
+          if (favoriteRecipesList.isNotEmpty)
+            Container(
+              padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
+              child: Image.network(
+                'https://i.postimg.cc/1tkjw4HW/C-pia-de-Black-And-White-Aesthetic-Minimalist-Modern-Simple-Typography-Coconut-Cosmetics-Logo.png',
+                height: 32,
+                fit: BoxFit.cover,
               ),
-            )
-          : ListView.builder(
-              itemCount: favoriteRecipesList.length,
-              itemBuilder: (context, index) {
-                final recipe = favoriteRecipesList[index]['recipe'];
-                return _buildRecipeCard(recipe);
-              },
             ),
+          Expanded(
+            child: favoriteRecipesList.isEmpty
+                ? Center(
+                    child: Text(
+                      'Você ainda não tem favoritos :(',
+                      style: TextStyle(fontSize: 22, color: Colors.white),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: favoriteRecipesList.length,
+                    itemBuilder: (context, index) {
+                      final recipe = favoriteRecipesList[index]['recipe'];
+                      return _buildRecipeCard(recipe);
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildRecipeCard(Map<String, dynamic> recipe) {
     final preparationUrl = recipe['url'] ?? '';
-    final recipeId = preparationUrl; // Pode ser usado um ID único se disponível
+    final recipeId = preparationUrl;
     final isFavorite = _favoriteRecipes.contains(recipeId);
 
     return RecipeCard(
